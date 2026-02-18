@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merkle Engagement Playbook</title>
+<style>
+  :root {
+    --navy: #0a1628;
+    --blue: #1a3a6b;
+    --accent: #e8380d;
+    --light-blue: #2563eb;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --green: #16a34a;
+    --yellow: #ca8a04;
+    --red: #dc2626;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%);
+    color: white; padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 28px; height: 28px; background: var(--accent); clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%); }
+  .logo-text { font-size: 18px; font-weight: 700; letter-spacing: 2px; }
+  .header-subtitle { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* NAV */
+  nav { display: flex; overflow-x: auto; gap: 0; }
+  nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    background: none; border: none; color: rgba(255,255,255,0.7);
+    padding: 10px 16px; cursor: pointer; font-size: 12px; font-weight: 500;
+    white-space: nowrap; border-bottom: 3px solid transparent;
+    transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .nav-btn:hover { color: white; background: rgba(255,255,255,0.05); }
+  .nav-btn.active { color: white; border-bottom-color: var(--accent); background: rgba(255,255,255,0.08); }
+
+  /* MAIN */
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 20px; }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #1e3a5f 100%);
+    border-radius: 16px; padding: 48px 40px; color: white; margin-bottom: 28px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 300px; height: 300px; background: rgba(37,99,235,0.2);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: ''; position: absolute; right: 60px; bottom: -80px;
+    width: 200px; height: 200px; background: rgba(232,56,13,0.15);
+    border-radius: 50%;
+  }
+  .hero h1 { font-size: 36px; font-weight: 800; line-height: 1.1; margin-bottom: 12px; position: relative; z-index: 1; }
+  .hero p { font-size: 16px; color: rgba(255,255,255,0.75); position: relative; z-index: 1; }
+  .hero-tag { display: inline-block; background: var(--accent); color: white; font-size: 10px; font-weight: 700; letter-spacing: 2px; padding: 4px 10px; border-radius: 4px; margin-bottom: 16px; text-transform: uppercase; }
+
+  /* AUDIENCE CARDS */
+  .audience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+  .audience-card {
+    background: var(--card); border-radius: 12px; padding: 24px;
+    border: 1px solid var(--border); display: flex; gap: 16px; align-items: flex-start;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .audience-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .audience-icon { font-size: 32px; flex-shrink: 0; }
+  .audience-card h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .audience-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* PHASE GRID */
+  .phase-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .phase-card {
+    background: var(--card); border-radius: 12px; padding: 20px;
+    border: 1px solid var(--border); cursor: pointer;
+    transition: all 0.2s; text-align: center;
+    border-top: 4px solid transparent;
+  }
+  .phase-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
+  .phase-card.backstage { border-top-color: #8b5cf6; }
+  .phase-card.lights-on { border-top-color: #0ea5e9; }
+  .phase-card.full-speed { border-top-color: var(--green); }
+  .phase-card.mic-drop { border-top-color: var(--accent); }
+  .phase-icon { font-size: 28px; margin-bottom: 8px; }
+  .phase-card h3 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .phase-card p { font-size: 11px; color: var(--muted); }
+
+  /* SECTION HEADER */
+  .section-header { margin-bottom: 24px; }
+  .section-header h2 { font-size: 26px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+  .section-header p { font-size: 14px; color: var(--muted); }
+  .breadcrumb { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .breadcrumb span { color: var(--light-blue); }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border-radius: 12px; padding: 24px;
+    border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .card h3 { font-size: 16px; font-weight: 700; color: var(--navy); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card p, .card li { font-size: 14px; color: var(--text); line-height: 1.6; }
+  .card ul { padding-left: 20px; }
+  .card li { margin-bottom: 6px; }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .card-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* STEP CARD */
+  .step-card {
+    background: var(--card); border-radius: 12px; padding: 20px 24px;
+    border: 1px solid var(--border); margin-bottom: 12px;
+    display: flex; gap: 20px; align-items: flex-start;
+    transition: box-shadow 0.2s;
+  }
+  .step-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .step-num {
+    width: 36px; height: 36px; border-radius: 50%; background: var(--navy);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-content h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .step-content p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ALERT/NOTE */
+  .alert {
+    border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+    display: flex; gap: 12px; align-items: flex-start; font-size: 13px;
+  }
+  .alert-icon { font-size: 18px; flex-shrink: 0; }
+  .alert.warning { background: #fefce8; border: 1px solid #fde047; }
+  .alert.info { background: #eff6ff; border: 1px solid #bfdbfe; }
+  .alert.success { background: #f0fdf4; border: 1px solid #bbf7d0; }
+  .alert strong { display: block; margin-bottom: 3px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--navy); color: white; padding: 10px 14px; text-align: left; font-size: 12px; letter-spacing: 0.5px; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #f8fafc; }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-green { background: #dcfce7; color: #15803d; }
+  .tag-purple { background: #ede9fe; color: #6d28d9; }
+  .tag-orange { background: #ffedd5; color: #c2410c; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 32px; }
+  .timeline::before { content: ''; position: absolute; left: 10px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 24px; }
+  .tl-dot {
+    position: absolute; left: -28px; top: 4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--light-blue); border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--light-blue);
+  }
+  .tl-item h4 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .tl-item p { font-size: 13px; color: var(--muted); }
+  .tl-badge { font-size: 11px; font-weight: 600; color: var(--light-blue); background: #dbeafe; padding: 2px 8px; border-radius: 4px; margin-left: 8px; }
+
+  /* GLOSSARY */
+  .glossary-search {
+    width: 100%; padding: 12px 16px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 14px; margin-bottom: 16px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .glossary-search:focus { border-color: var(--light-blue); }
+  .glossary-row { display: flex; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .glossary-row:last-child { border-bottom: none; }
+  .glossary-acronym { font-weight: 700; color: var(--navy); min-width: 70px; font-size: 13px; }
+  .glossary-name { min-width: 180px; font-size: 13px; color: var(--light-blue); font-weight: 600; }
+  .glossary-desc { font-size: 13px; color: var(--muted); flex: 1; }
+
+  /* FOLDER */
+  .folder-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .folder-tab {
+    padding: 7px 16px; border-radius: 6px; border: 1px solid var(--border);
+    background: white; cursor: pointer; font-size: 12px; font-weight: 600;
+    color: var(--muted); transition: all 0.2s;
+  }
+  .folder-tab.active { background: var(--navy); color: white; border-color: var(--navy); }
+  .folder-content { display: none; }
+  .folder-content.active { display: block; }
+  .folder-item {
+    display: flex; gap: 12px; padding: 10px 14px;
+    background: white; border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 8px; align-items: flex-start;
+  }
+  .folder-icon { font-size: 20px; }
+  .folder-item h4 { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .folder-item p { font-size: 12px; color: var(--muted); }
+
+  /* CHECKLIST */
+  .checklist-item {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); align-items: center; cursor: pointer;
+  }
+  .checklist-item:last-child { border-bottom: none; }
+  .check-box {
+    width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 4px;
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .checklist-item.checked .check-box { background: var(--green); border-color: var(--green); color: white; }
+  .checklist-item.checked span { text-decoration: line-through; color: var(--muted); }
+  .checklist-label { font-size: 14px; }
+
+  /* BACK BUTTON */
+  .back-btn {
+    background: none; border: 1px solid var(--border); border-radius: 6px;
+    padding: 7px 14px; cursor: pointer; font-size: 12px; font-weight: 600;
+    color: var(--muted); margin-bottom: 20px; display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .back-btn:hover { border-color: var(--navy); color: var(--navy); }
+
+  .timing-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #fef3c7; color: #92400e; font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 4px;
+  }
+
+  @media (max-width: 700px) {
+    .audience-grid, .phase-grid, .card-grid, .card-grid-3 { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 24px; }
+    .hero { padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <div>
+        <div class="logo-text">MERKLE</div>
+        <div class="header-subtitle">Engagement Playbook 2026</div>
+      </div>
+    </div>
+  </div>
+  <nav id="main-nav">
+    <button class="nav-btn active" onclick="showSection('home')">🏠 Home</button>
+    <button class="nav-btn" onclick="showSection('backstage')">🎭 Backstage</button>
+    <button class="nav-btn" onclick="showSection('meet-greet')">🤝 Meet & Greet</button>
+    <button class="nav-btn" onclick="showSection('playbook')">📋 The Playbook</button>
+    <button class="nav-btn" onclick="showSection('lights-on')">💡 Lights On</button>
+    <button class="nav-btn" onclick="showSection('execution')">⚡ Execution</button>
+    <button class="nav-btn" onclick="showSection('wrapup')">🎤 Wrap-Up</button>
+    <button class="nav-btn" onclick="showSection('glossary')">📖 Glossary</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- HOME -->
+<div class="section active" id="section-home">
+  <div class="hero">
+    <div class="hero-tag">January 2026</div>
+    <h1>End-to-End<br>Engagement Playbook</h1>
+    <p>Everything you need — from first dollar to final debrief</p>
+  </div>
+
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="audience-icon">🎯</div>
+      <div>
+        <h3>Engagement Leads</h3>
+        <p>Own the full lifecycle — from pricing to wrap-up — with confidence and consistency.</p>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">📋</div>
+      <div>
+        <h3>Project Managers</h3>
+        <p>Hit the ground running with ready-to-use templates, trackers, and best practices.</p>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-icon">🆕</div>
+      <div>
+        <h3>New Team Members</h3>
+        <p>Ramp up fast with a single source of truth for how engagements run.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-bottom:20px;">
+    <div class="section-header"><h2>Engagement Phases</h2><p>Click any phase to dive in</p></div>
+    <div class="phase-grid">
+      <div class="phase-card backstage" onclick="showSection('backstage')">
+        <div class="phase-icon">🎭</div>
+        <h3>Backstage</h3>
+        <p>Pricing · Contracts · Setup</p>
+      </div>
+      <div class="phase-card lights-on" onclick="showSection('meet-greet')">
+        <div class="phase-icon">🤝</div>
+        <h3>Meet & Greet</h3>
+        <p>Client Introduction</p>
+      </div>
+      <div class="phase-card full-speed" onclick="showSection('playbook')">
+        <div class="phase-icon">📋</div>
+        <h3>The Playbook</h3>
+        <p>Kickoff · Planning · Tracking</p>
+      </div>
+      <div class="phase-card mic-drop" onclick="showSection('wrapup')">
+        <div class="phase-icon">🎤</div>
+        <h3>Mic Drop</h3>
+        <p>Project Wrap-Up</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📦 What's In This Playbook</h3>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Section</th><th>What You'll Get</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-purple">Pricing Tool</span></td><td>How to scope and price engagements accurately</td></tr>
+          <tr><td><span class="tag tag-blue">Contracts</span></td><td>Key contract stages, review checkpoints, and sign-off process</td></tr>
+          <tr><td><span class="tag tag-blue">Billing Codes</span></td><td>Setting up billing codes correctly from day one</td></tr>
+          <tr><td><span class="tag tag-green">Microsoft Teams</span></td><td>Channel setup, naming conventions, and team structure</td></tr>
+          <tr><td><span class="tag tag-green">Kick-Off Decks</span></td><td>Internal & client kick-off templates, talking points, and tips</td></tr>
+          <tr><td><span class="tag tag-orange">Project Plan</span></td><td>Standard project plan structure and how to tailor it</td></tr>
+          <tr><td><span class="tag tag-orange">Project Tracking</span></td><td>How to track progress, flag risks, and keep stakeholders informed</td></tr>
+          <tr><td><span class="tag tag-orange">Retrospective</span></td><td>Running effective retros — what to capture and why</td></tr>
+          <tr><td><span class="tag tag-orange">Wrap-Up</span></td><td>Closing out the engagement cleanly and professionally</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- BACKSTAGE -->
+<div class="section" id="section-backstage">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>Backstage Pass</span></div>
+    <h2>🎭 Backstage Pass</h2>
+    <p>Pre-engagement setup: pricing, contracts, team, and infrastructure</p>
+  </div>
+
+  <!-- Pricing -->
+  <div class="card">
+    <h3>💰 Pricing Tool</h3>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <h4>Get Basic Details <span class="tl-badge">Before Signing</span></h4>
+        <p>Client name · Project type · Projected start dates</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <h4>Fill Out by Role & Skill Level</h4>
+        <p>Use like team members for best pricing scenarios. Actual named members added based on availability during approval routing.</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <h4>Leverage Your Network</h4>
+        <p>Connect with architects and engineers to build a properly scoped timeline and budget based on prior similar work.</p>
+      </div>
+    </div>
+    <div class="alert warning">
+      <div class="alert-icon">⚠️</div>
+      <div><strong>Always pull a fresh copy!</strong> The pricing tool is updated frequently — always use the latest version for accurate pricing and resource listings.</div>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="card">
+    <h3>👥 Identify the Team</h3>
+    <p style="margin-bottom:12px;">Reach out to perspective leadership departments to request required personnel. At minimum, identify:</p>
+    <div class="card-grid-3" style="margin-bottom:14px;">
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px;">🏗️</div>
+        <div style="font-weight:700;font-size:13px;">Architect</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px;">⚙️</div>
+        <div style="font-weight:700;font-size:13px;">Engineer</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:24px;margin-bottom:6px;">✅</div>
+        <div style="font-weight:700;font-size:13px;">QA</div>
+      </div>
+    </div>
+    <div class="alert info">
+      <div class="alert-icon">💡</div>
+      <div>Service Lines are a great starting point to find required skill sets. Utilize team bios when introducing team members to clients.</div>
+    </div>
+  </div>
+
+  <!-- Contracts -->
+  <div class="card">
+    <h3>📄 Contracts — WAOC + SOW</h3>
+    <div class="card-grid">
+      <div>
+        <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:8px;">WAOC <span class="tag tag-blue">Work Ahead of Contract</span></h4>
+        <p style="font-size:13px;color:var(--muted);">Allows work to begin before full SOW is signed. Must be tracked and disclosed in financial reporting using the FINANCIALS metric.</p>
+      </div>
+      <div>
+        <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:8px;">SOW <span class="tag tag-green">Statement of Work</span></h4>
+        <p style="font-size:13px;color:var(--muted);">Defines project scope, deliverables, timeline, and obligations. Use to determine team allocations and exact committed deliverables.</p>
+      </div>
+    </div>
+    <div class="alert warning">
+      <div class="alert-icon">⚠️</div>
+      <div><strong>Follow up with leadership</strong> to ensure a WAOC or SOW is signed before work begins. If joining a project in progress, locate the SOW immediately.</div>
+    </div>
+  </div>
+
+  <!-- Billing -->
+  <div class="card">
+    <h3>🧾 Billing Codes (D365)</h3>
+    <p style="margin-bottom:12px;font-size:14px;">With a SOW or WAOC in place, billing codes are ready for assignment. Submit requests for all team members to be added to project billing codes.</p>
+    <div class="alert success">
+      <div class="alert-icon">⏱️</div>
+      <div><strong>Expected Timing:</strong> Complete within <strong>2 days</strong> of receiving the project code. You can submit the entire team in one ticket if you have all details.</div>
+    </div>
+    <div class="alert info">
+      <div class="alert-icon">💡</div>
+      <div>Resources: New Project Set Up Toolbox · D365 Project Set Up · WAOC Forms</div>
+    </div>
+  </div>
+
+  <!-- Teams Setup -->
+  <div class="card">
+    <h3>💬 Microsoft Teams Setup</h3>
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Create a New Team</h4>
+        <p>Click "Create Team" in upper right. Name: <strong>[Client Name]</strong> (e.g. Project Onboarding). Set first channel (e.g. General, Process).</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Invite Members</h4>
+        <p>Add team members and necessary leadership for visibility. Assign access: <strong>Member</strong> or <strong>Owner</strong>.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Set Up Folder Structure</h4>
+        <p>Use the standard folder structure based on project type. See below for details per project type.</p>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="section-header"><h2 style="font-size:16px;">📁 Folder Structure by Project Type</h2></div>
+      <div class="folder-tabs">
+        <button class="folder-tab active" onclick="showFolder('discovery')">Discovery</button>
+        <button class="folder-tab" onclick="showFolder('support')">Support</button>
+        <button class="folder-tab" onclick="showFolder('implementation')">Implementation</button>
+        <button class="folder-tab" onclick="showFolder('migration')">Migration</button>
+        <button class="folder-tab" onclick="showFolder('campaign')">Campaign</button>
+      </div>
+
+      <div class="folder-content active" id="folder-discovery">
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>00. Program Management</h4><p>SOW · Pricing tool · TRR · Deliverable tracker · Weekly status documents</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>01. Planning</h4><p>Project workbook · Working session docs · Kick-off documents · Roadmap · Document request tracker</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>02. Discovery</h4><p>Client documents to review · Environment documentation</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>03. Assessment</h4><p>References · Analysis · Use cases · Readout</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>04. Deliverables</h4><p>Client delivered documents</p></div></div>
+        <div class="folder-item"><div class="folder-icon">🗂️</div><div><h4>99. ARCHIVE</h4><p>Deprecated materials retained for reference</p></div></div>
+      </div>
+
+      <div class="folder-content" id="folder-support">
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>00. Program Management</h4><p>SOW · Pricing tool · TRR · Deliverable tracker · Weekly status docs</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>01. Planning</h4><p>Program workbook · KT session docs · Roadmap</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>02. Requirements + Scope</h4><p>Business/technical/data requirements · Use cases · Scope definition</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>03–05. Technical, Data & Build</h4><p>Architecture · Data models · STT Mappings · Source docs · Configuration files · Code repos</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>06. Testing + Validation</h4><p>Test strategy · UAT materials · Defect log · Validation results</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>07. Deployment + Release</h4><p>Release plan · Cutover checklist · Go-live sign off</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>08–10. Deliverables, Operations & Compliance</h4><p>Reports · Runbooks · SLAs · Security reviews · Access approvals</p></div></div>
+        <div class="folder-item"><div class="folder-icon">🗂️</div><div><h4>99. ARCHIVE</h4><p>Deprecated materials retained for reference</p></div></div>
+      </div>
+
+      <div class="folder-content" id="folder-implementation">
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>00. Program Management</h4><p>SOW · Pricing tool · TRR · Deliverable tracker · Weekly status docs</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>01–05. Planning through Build</h4><p>Project workbook · Requirements · Architecture · Data sources · Build documentation</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>06–07. Testing & Deployment</h4><p>UAT · Test cases · Release plan · Go-live sign off</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>08–10. Deliverables, Ops & Compliance</h4><p>Final deliverables · Runbooks · Security reviews</p></div></div>
+        <div class="folder-item"><div class="folder-icon">🗂️</div><div><h4>99. ARCHIVE</h4><p>Deprecated materials retained for reference</p></div></div>
+      </div>
+
+      <div class="folder-content" id="folder-migration">
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>00. Program Management</h4><p>SOW · Pricing tool · TRR · Deliverable tracker</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>01–05. Planning through Build</h4><p>Project workbook · Requirements · Architecture · Ingestion specs · Build docs</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>06–10. Testing through Compliance</h4><p>UAT · Deployment docs · Runbooks · SLAs · Compliance artifacts</p></div></div>
+        <div class="folder-item"><div class="folder-icon">🗂️</div><div><h4>99. ARCHIVE</h4><p>Deprecated materials retained for reference</p></div></div>
+      </div>
+
+      <div class="folder-content" id="folder-campaign">
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>00. Program Management</h4><p>SOW · Pricing tool · TRR · Deliverable tracker</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>01–05. Planning through Build</h4><p>Program workbook · Requirements · Architecture · Source docs · Build documentation</p></div></div>
+        <div class="folder-item"><div class="folder-icon">📁</div><div><h4>06–10. Testing through Compliance</h4><p>UAT · Deployment docs · Runbooks · SLAs · Compliance artifacts</p></div></div>
+        <div class="folder-item"><div class="folder-icon">🗂️</div><div><h4>99. ARCHIVE</h4><p>Deprecated materials retained for reference</p></div></div>
+      </div>
+    </div>
+
+    <div class="alert warning" style="margin-top:16px;">
+      <div class="alert-icon">📝</div>
+      <div><strong>Naming Convention:</strong> <code style="background:#f0f4f8;padding:2px 6px;border-radius:4px;">ClientName ProjectName DocType.MMDDYY</code><br>Example: <em>Amica Enablement Experience RFP 020126.PDF</em></div>
+    </div>
+  </div>
+
+  <!-- Product Access -->
+  <div class="card">
+    <h3>🔐 Product Access</h3>
+    <p style="margin-bottom:12px;font-size:14px;">Determine each team member's required access needs for client environment, tools, and/or devices.</p>
+    <ul style="font-size:13px;color:var(--text);padding-left:20px;line-height:1.8;">
+      <li>Request access to required platforms: Adobe Analytics, Adobe Launch, Google Analytics, Google GTM, Tealium, Lytics, Snowflake, etc.</li>
+      <li>Request early to allow the team to investigate the client's current setup</li>
+      <li>Request only the access level needed to complete the project</li>
+    </ul>
+    <div class="alert warning">
+      <div class="alert-icon">🔒</div>
+      <div>Some clients require VPN and/or VDI access. Refer to the Program Workbook (tab: ACCESS) for full access tracking.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MEET & GREET -->
+<div class="section" id="section-meet-greet">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>Meet & Greet</span></div>
+    <h2>🤝 Client Introduction</h2>
+    <p>Initial introductions and requirement gathering</p>
+  </div>
+  <div class="card">
+    <h3>📋 Initial Meet & Greet — Gather Details</h3>
+    <p style="margin-bottom:16px;font-size:14px;">Use this time to introduce yourself and review/gather project requirements.</p>
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content"><h4>Introduce Yourself</h4><p>Share your role and its relation to the project requirements.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content"><h4>Review Project Requirements</h4><p>Scope, ETAs, MVPs, pain points, and desired improvements.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content"><h4>Determine Environment Needs</h4><p>Identify if you'll need to work in VDI, VPN, client JIRA or ADO instances, and initiate access requests.</p></div>
+    </div>
+    <div class="alert info">
+      <div class="alert-icon">💡</div>
+      <div>Use the latest Merkle PPT Template for presentations. This is a great opportunity to introduce the team and set the tone for collaboration.</div>
+    </div>
+  </div>
+</div>
+
+<!-- THE PLAYBOOK -->
+<div class="section" id="section-playbook">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>The Playbook</span></div>
+    <h2>📋 The Playbook</h2>
+    <p>Internal kick-off, roles, project planning, and tracking</p>
+  </div>
+
+  <div class="card">
+    <h3>🚀 Internal Kick-Off</h3>
+    <div class="timing-badge" style="margin-bottom:14px;">⏱️ 1–2 weeks before project onboarding</div>
+    <p style="font-size:14px;margin-bottom:16px;">A team brainstorm session to align on project details before client engagement begins.</p>
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content"><h4>Introduce the Team to Project Details</h4><p>Share everything known so far. Review existing documents in the Teams folder.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content"><h4>Receive Feedback</h4><p>Discuss LOEs, roadblocks, required platform access, and scope questions.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content"><h4>Identify Risk Factors</h4><p>The earlier risks are identified, the sooner a solution can be built.</p></div>
+    </div>
+    <div class="alert info"><div class="alert-icon">📎</div><div>Use the <strong>Internal Kick-Off Template</strong> — includes: team intro slides, Ways of Working, Scope Refresher, and Timeline view.</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Determine Roles & Responsibilities (RACI)</h3>
+    <div class="timing-badge" style="margin-bottom:14px;">⏱️ 1–2 weeks before project onboarding</div>
+    <p style="font-size:14px;margin-bottom:16px;">Review each team member's allocation, project title, and duties. Use a RACI to define ownership clearly across both client and Merkle sides.</p>
+    <div class="card-grid">
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;">
+        <div style="font-weight:700;color:#2563eb;margin-bottom:4px;">R — Responsible</div>
+        <div style="font-size:13px;color:var(--muted);">Does the work</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;">
+        <div style="font-weight:700;color:#16a34a;margin-bottom:4px;">A — Accountable</div>
+        <div style="font-size:13px;color:var(--muted);">Owns the outcome</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;">
+        <div style="font-weight:700;color:#ca8a04;margin-bottom:4px;">C — Consulted</div>
+        <div style="font-size:13px;color:var(--muted);">Provides input</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;">
+        <div style="font-weight:700;color:#7c3aed;margin-bottom:4px;">I — Informed</div>
+        <div style="font-size:13px;color:var(--muted);">Kept in the loop</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Project Plan</h3>
+    <div class="timing-badge" style="margin-bottom:14px;">⏱️ Within 1 week after client introductions</div>
+    <p style="font-size:14px;margin-bottom:14px;">A project roadmap tracking where you're going. Built in Smartsheet with estimated timelines from the pricing tool.</p>
+    <p style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">Minimum phases to account for:</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+      <span class="tag tag-blue">Discovery</span>
+      <span class="tag tag-blue">Design</span>
+      <span class="tag tag-green">Technical Setup</span>
+      <span class="tag tag-green">Development</span>
+      <span class="tag tag-orange">Quality Assurance</span>
+      <span class="tag tag-orange">Production Release</span>
+    </div>
+    <div class="alert info"><div class="alert-icon">💡</div><div>Initiate a call with engineer/architect to review work requests and determine LOEs for each step. The plan will be iterative throughout the engagement.</div></div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Project Tracking</h3>
+    <div class="timing-badge" style="margin-bottom:14px;">⏱️ Within 2–3 days post client introductions</div>
+    <p style="font-size:14px;margin-bottom:14px;">Determine your task tracking tool and create tasks aligned to the project plan.</p>
+    <div class="card-grid-3" style="margin-bottom:14px;">
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">🟦</div>
+        <div style="font-weight:700;font-size:13px;">JIRA</div>
+        <div style="font-size:11px;color:var(--muted);">Merkle preferred</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">📊</div>
+        <div style="font-weight:700;font-size:13px;">Smartsheet</div>
+        <div style="font-size:11px;color:var(--muted);">For Gantt/project plans</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;text-align:center;">
+        <div style="font-size:22px;margin-bottom:4px;">🔷</div>
+        <div style="font-weight:700;font-size:13px;">ADO / Workfront</div>
+        <div style="font-size:11px;color:var(--muted);">Client systems</div>
+      </div>
+    </div>
+    <div class="alert info"><div class="alert-icon">📌</div><div>Set up a Project Dashboard in the Teams folder for high-level weekly client review. Lean on team members for additional level-of-detail recommendations.</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🖥️ Client Device Policy</h3>
+    <p style="font-size:14px;margin-bottom:14px;">Set clear expectations with the team about client device and software use during the project.</p>
+    <div id="device-checklist">
+      <div class="checklist-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="checklist-label">Include SOW verbiage on client device use in internal kick-off deck</span></div>
+      <div class="checklist-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="checklist-label">Do NOT screenshare on client device with alias emails or non-project Merkle members</span></div>
+      <div class="checklist-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="checklist-label">Do NOT download or use unapproved client apps on client devices</span></div>
+      <div class="checklist-item" onclick="toggleCheck(this)"><div class="check-box">✓</div><span class="checklist-label">When in doubt, ASK the PM/Client Lead about software or screen sharing</span></div>
+    </div>
+    <div class="alert warning"><div class="alert-icon">⚠️</div><div>Clients <strong>audit</strong> client-issued devices and monitor software downloads/uses regularly.</div></div>
+  </div>
+</div>
+
+<!-- LIGHTS ON -->
+<div class="section" id="section-lights-on">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>Lights On</span></div>
+    <h2>💡 Lights On</h2>
+    <p>Client kick-off, meetings, financial tracking, and billing</p>
+  </div>
+
+  <div class="card">
+    <h3>🎉 Client Kick-Off</h3>
+    <div class="timing-badge" style="margin-bottom:14px;">⏱️ 1 week after signed SOW</div>
+    <p style="font-size:14px;margin-bottom:14px;">Introduce teams to each other, demonstrate ways of working, and align on scope.</p>
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content"><h4>Fine-Tune the Project Plan</h4><p>Ensure the team has reviewed and refined the project plan before client presentation.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content"><h4>Introduce Both Teams</h4><p>Use the external kick-off deck. Show which tools will be used for project status tracking to enable collaboration without delays.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content"><h4>Optional: Discovery Sessions</h4><p>If time permits, conduct discovery sessions with the client to fine-tune the project plan and speed up later development discovery.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📅 Internal + External Meetings</h3>
+    <div class="timing-badge" style="margin-bottom:14px;">⏱️ Within 1–2 days after client kick-off</div>
+    <div class="card-grid">
+      <div style="background:#eff6ff;border-radius:8px;padding:16px;border:1px solid #bfdbfe;">
+        <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:8px;">🔵 Internal Sync</h4>
+        <p style="font-size:13px;color:var(--muted);">Weekly/daily/bi-weekly team cadence. Align internally before client-facing meetings.</p>
+      </div>
+      <div style="background:#f0fdf4;border-radius:8px;padding:16px;border:1px solid #bbf7d0;">
+        <h4 style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:8px;">🟢 External (Client) Sync</h4>
+        <p style="font-size:13px;color:var(--muted);">Weekly/bi-weekly with client. Review status, issues, escalations, and client requests.</p>
+      </div>
+    </div>
+    <div class="alert info"><div class="alert-icon">💡</div><div>For client calls: offer your available times first, then flex around what works for the client.</div></div>
+  </div>
+
+  <div class="card">
+    <h3>💼 Internal Financial Tracking</h3>
+    <p style="font-size:14px;margin-bottom:14px;">Used for internal project reporting to ensure the project is on track per agreement.</p>
+    <ul style="font-size:13px;padding-left:20px;line-height:1.8;">
+      <li>Once billing code is set up, add project details to the Data Platforms delivery collaboration tracker</li>
+      <li>Create a CDS status slide and add to the CDS Status Report Deck</li>
+      <li>Template is found at the back of the status deck — duplicate and edit</li>
+    </ul>
+    <div class="alert warning"><div class="alert-icon">⚠️</div><div>Use the <strong>FINANCIALS</strong> metric to declare if work is on WAOC and highlight the associated risk. Be prepared to report resource hours and cost incurred (typically through the prior week).</div></div>
+  </div>
+
+  <div class="card">
+    <h3>📈 Utilization Reports — Tips & Tricks</h3>
+    <p style="font-size:14px;margin-bottom:14px;">To update a Power BI–connected Utilization Report template:</p>
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content"><h4>Copy the Template</h4><p>Copy existing spreadsheet template. Navigate to <strong>Data → Queries & Connections</strong>.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content"><h4>Update the Connection</h4><p>In the sidebar, select "Connections" then double-click to open details panel. Select "Definition" in Connection Properties.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content"><h4>Update Project Name & Dates</h4><p>In Command Text, copy project name from D365 <strong>exactly as displayed</strong> and replace the template name. Update years to reflect project timeline (start/end year).</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXECUTION -->
+<div class="section" id="section-execution">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>Execution</span></div>
+    <h2>⚡ Full Speed — Execution</h2>
+    <p>Documents and deliverables most used during active project work</p>
+  </div>
+
+  <div class="card">
+    <h3>📄 Execution Documents</h3>
+    <p style="font-size:14px;margin-bottom:16px;">Key architect-level documents used throughout delivery:</p>
+    <div class="card-grid-3">
+      <div style="background:#f0f4f8;border-radius:8px;padding:16px;">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">EATSD</div>
+        <div style="font-size:12px;color:var(--muted);">Enterprise Architecture Technical Solution Design — High-level technical blueprint across the enterprise ecosystem.</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:16px;">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">STT</div>
+        <div style="font-size:12px;color:var(--muted);">Source to Target — Data mapping methodology tracing how data elements move from origin to destination.</div>
+      </div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:16px;">
+        <div style="font-weight:700;color:var(--navy);margin-bottom:4px;">FLD</div>
+        <div style="font-size:12px;color:var(--muted);">Feed Layout Document — Defines structure and format of a specific data file or feed.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📚 Deliverable Definitions</h3>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead><tr><th>Acronym</th><th>Name</th><th>File Type</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag tag-blue">AD</span></td><td>Architecture Diagram</td><td>Visio / PNG / PPT</td></tr>
+          <tr><td><span class="tag tag-blue">ADD</span></td><td>Audience Definition Document</td><td>Word</td></tr>
+          <tr><td><span class="tag tag-green">BRD</span></td><td>Business Rules Document</td><td>Word</td></tr>
+          <tr><td><span class="tag tag-green">CRD</span></td><td>Campaign Requirements Document</td><td>Word</td></tr>
+          <tr><td><span class="tag tag-purple">DD</span></td><td>Data Dictionary</td><td>Excel</td></tr>
+          <tr><td><span class="tag tag-purple">DMD</span></td><td>Data Mapping Document</td><td>Excel</td></tr>
+          <tr><td><span class="tag tag-orange">EATSD</span></td><td>Enterprise Architecture Technical Solution Design</td><td>Word</td></tr>
+          <tr><td><span class="tag tag-orange">FLD</span></td><td>Feed Layout Document</td><td>Excel</td></tr>
+          <tr><td><span class="tag tag-blue">FRD</span></td><td>Functional Requirements Document</td><td>Word</td></tr>
+          <tr><td><span class="tag tag-green">MM</span></td><td>Metrics Matrix</td><td>Excel</td></tr>
+          <tr><td><span class="tag tag-purple">PP</span></td><td>Project Plan</td><td>Smartsheet / Excel</td></tr>
+          <tr><td><span class="tag tag-purple">RACI</span></td><td>Responsible Accountable Consulted Informed</td><td>—</td></tr>
+          <tr><td><span class="tag tag-orange">SDR</span></td><td>Solution Design Reference</td><td>—</td></tr>
+          <tr><td><span class="tag tag-blue">SOW</span></td><td>Statement of Work</td><td>Word</td></tr>
+          <tr><td><span class="tag tag-green">TP</span></td><td>Test Plan</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- WRAP-UP -->
+<div class="section" id="section-wrapup">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>Mic Drop</span></div>
+    <h2>🎤 Project Wrap-Up</h2>
+    <p>Close out the engagement cleanly, celebrate the work, and capture learnings</p>
+  </div>
+
+  <div class="card">
+    <h3>🏁 Wrap-Up Steps</h3>
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-content"><h4>Schedule a Postmortem Meeting</h4><p>Bring the full team together to discuss what went well, what should be improved, and celebrate the work completed.</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-content"><h4>Use a Whiteboard for Pre-Meeting Feedback</h4><p>Gather async feedback before the meeting using a shared whiteboard (e.g. Teams Whiteboard).</p></div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-content"><h4>Create a Wrap-Up Slide</h4><p>Present during the CDS Friday meeting. Use the template from the back of the status deck — duplicate and edit.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔄 Retro Framework</h3>
+    <div class="card-grid" style="margin-bottom:16px;">
+      <div style="background:#f0fdf4;border-radius:8px;padding:16px;border:1px solid #bbf7d0;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px;">✅ What Went WELL?</h4>
+        <p style="font-size:12px;color:var(--muted);">Highlights, wins, effective practices to repeat</p>
+      </div>
+      <div style="background:#fef9c3;border-radius:8px;padding:16px;border:1px solid #fde047;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px;">⚡ What Was CHALLENGING?</h4>
+        <p style="font-size:12px;color:var(--muted);">Blockers, delays, complexity to address next time</p>
+      </div>
+      <div style="background:#eff6ff;border-radius:8px;padding:16px;border:1px solid #bfdbfe;">
+        <h4 style="font-size:13px;font-weight:700;color:var(--light-blue);margin-bottom:6px;">🔄 Start / Stop / Continue</h4>
+        <p style="font-size:12px;color:var(--muted);">Action-oriented recommendations for the team</p>
+      </div>
+      <div style="background:#fdf4ff;border-radius:8px;padding:16px;border:1px solid #e9d5ff;">
+        <h4 style="font-size:13px;font-weight:700;color:#7c3aed;margin-bottom:6px;">💬 Additional Thoughts</h4>
+        <p style="font-size:12px;color:var(--muted);">Open feedback and reactions from the team</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Wrap-Up Slide Contents</h3>
+    <div class="card-grid-3">
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;"><div style="font-weight:700;font-size:13px;margin-bottom:4px;">3 Things</div><div style="font-size:12px;color:var(--muted);">Outstanding & Improve (top 3 each)</div></div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;"><div style="font-weight:700;font-size:13px;margin-bottom:4px;">Closing Financials</div><div style="font-size:12px;color:var(--muted);">Contingency, ODE, margin, hours, duration</div></div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;"><div style="font-weight:700;font-size:13px;margin-bottom:4px;">Key Metrics</div><div style="font-size:12px;color:var(--muted);">Client-facing & internal issue summary</div></div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;"><div style="font-weight:700;font-size:13px;margin-bottom:4px;">Key Challenges</div><div style="font-size:12px;color:var(--muted);">Stakeholders, approvals, delays</div></div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;"><div style="font-weight:700;font-size:13px;margin-bottom:4px;">Transition to Production</div><div style="font-size:12px;color:var(--muted);">KT, documentation, timing</div></div>
+      <div style="background:#f0f4f8;border-radius:8px;padding:14px;"><div style="font-weight:700;font-size:13px;margin-bottom:4px;">Recognition</div><div style="font-size:12px;color:var(--muted);">xFunctional teams & standout individuals</div></div>
+    </div>
+    <div class="alert warning" style="margin-top:14px;"><div class="alert-icon">💰</div><div>Use the <strong>FINANCIALS</strong> metric to declare WAOC status and highlight the risk that project work started against WAOC.</div></div>
+  </div>
+</div>
+
+<!-- GLOSSARY -->
+<div class="section" id="section-glossary">
+  <div class="section-header">
+    <div class="breadcrumb">Home → <span>Glossary</span></div>
+    <h2>📖 Glossary</h2>
+    <p>Acronyms, definitions, and software references</p>
+  </div>
+
+  <div class="card" style="margin-bottom:12px;">
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <button class="folder-tab active" onclick="showGlossaryTab('common')">Common Terms</button>
+      <button class="folder-tab" onclick="showGlossaryTab('adobe')">Adobe Software</button>
+      <button class="folder-tab" onclick="showGlossaryTab('other')">Other Software</button>
+    </div>
+
+    <input class="glossary-search" placeholder="🔍 Search terms..." oninput="filterGlossary(this.value)" id="glossary-search">
+
+    <div id="glossary-common" class="glossary-section">
+      <div class="glossary-row"><div class="glossary-acronym">API</div><div class="glossary-name">Application Programming Interface</div><div class="glossary-desc">Rules and protocols that allow different software systems to communicate and send/receive data.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">B2B</div><div class="glossary-name">Business to Business</div><div class="glossary-desc">Commerce or engagement model where products/services are exchanged between organizations.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">B2C</div><div class="glossary-name">Business to Consumer</div><div class="glossary-desc">Commerce model where products/services are directed from a company to individual consumers.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">EDDL</div><div class="glossary-name">Event Driven Data Layer</div><div class="glossary-desc">Web data layer where data is pushed in response to user interactions or system events, enabling real-time analytics.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">FAC</div><div class="glossary-name">Federated Audience Composition</div><div class="glossary-desc">Adobe capability for building audiences by querying data across enterprise data warehouses without moving data.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">KO</div><div class="glossary-name">Kick Off</div><div class="glossary-desc">Presentation/meeting to align all stakeholders on scope, deliverables, timeline, and roles.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">KPI</div><div class="glossary-name">Key Performance Indicator</div><div class="glossary-desc">Quantifiable performance measurement evaluating success against defined objectives.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">MVP</div><div class="glossary-name">Minimum Viable Product</div><div class="glossary-desc">Smallest scope of a solution delivering enough core functionality to satisfy initial requirements.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">OOTB</div><div class="glossary-name">Out of the Box</div><div class="glossary-desc">Pre-built connectors, features, or configurations natively available without custom development.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">SLA</div><div class="glossary-name">Service Level Agreement</div><div class="glossary-desc">Formal agreement defining expected performance standards, response times, and uptime commitments.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">SNOW</div><div class="glossary-name">ServiceNow</div><div class="glossary-desc">Enterprise cloud platform for IT service management, ticketing, workflow automation, and support.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">SQL</div><div class="glossary-name">Structured Query Language</div><div class="glossary-desc">Standard programming language for querying, manipulating, and managing relational database data.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">STT</div><div class="glossary-name">Source to Target</div><div class="glossary-desc">Data mapping methodology tracing how data elements move from origin to destination fields.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">UAT</div><div class="glossary-name">User Acceptance Testing</div><div class="glossary-desc">Validation of software against user requirements, ensuring readiness for production deployment.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">UC</div><div class="glossary-name">Use Case</div><div class="glossary-desc">Defined business scenario describing how a user/system interacts with the solution to achieve a goal.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">WAOC</div><div class="glossary-name">Work Ahead of Contract</div><div class="glossary-desc">Agreement allowing work to begin before a full SOW is signed. Must be tracked and disclosed financially.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">XDM</div><div class="glossary-name">Experience Data Model</div><div class="glossary-desc">Core framework standardizing customer experience data with common structures for Adobe Experience Platform.</div></div>
+    </div>
+
+    <div id="glossary-adobe" class="glossary-section" style="display:none;">
+      <div class="glossary-row"><div class="glossary-acronym">AA</div><div class="glossary-name">Adobe Analytics</div><div class="glossary-desc">Web analytics platform with real-time reporting, segmentation, and attribution analysis.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">—</div><div class="glossary-name">Adobe Assurance</div><div class="glossary-desc">Debugging/validation tool for inspecting and testing data collection across Web SDK and mobile implementations.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">AEM</div><div class="glossary-name">Adobe Experience Manager</div><div class="glossary-desc">Content management system for building and managing websites, mobile apps, and digital forms.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">AEP</div><div class="glossary-name">Adobe Experience Platform</div><div class="glossary-desc">Foundational data platform that unifies customer data to power personalization, analytics, and activation.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">AJO</div><div class="glossary-name">Adobe Journey Optimizer</div><div class="glossary-desc">Tool for designing personalized, orchestrated customer journeys across email, push, SMS, and in-app. Replaces JO.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">—</div><div class="glossary-name">Adobe Launch / Tags</div><div class="glossary-desc">Tag management system for deploying and managing analytics, marketing, and advertising tags.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">AT</div><div class="glossary-name">Adobe Target</div><div class="glossary-desc">Testing and personalization engine for A/B testing, multivariate testing, and AI-driven content optimization.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">CJA</div><div class="glossary-name">Customer Journey Analytics</div><div class="glossary-desc">Analytics tool built on AEP providing cross-channel reporting of the full customer journey.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">DD</div><div class="glossary-name">Data Distiller</div><div class="glossary-desc">AEP capability for querying, transforming, and enriching large-scale datasets using SQL.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">RT-CDP</div><div class="glossary-name">Real-Time Customer Data Platform</div><div class="glossary-desc">Platform built on AEP that unifies customer profiles in real time, enabling audience segmentation and activation.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">PSS</div><div class="glossary-name">Privacy and Security Shield</div><div class="glossary-desc">AEP add-on providing enhanced data governance, consent enforcement, and access controls for privacy compliance.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">Web SDK</div><div class="glossary-name">Web Software Development Kit</div><div class="glossary-desc">Adobe's JavaScript library serving as a single unified tag for sending data from websites to AEP.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">—</div><div class="glossary-name">Workfront</div><div class="glossary-desc">Adobe's work management platform for planning, tracking, and collaborating on projects and workflows.</div></div>
+    </div>
+
+    <div id="glossary-other" class="glossary-section" style="display:none;">
+      <div class="glossary-row"><div class="glossary-acronym">ADO</div><div class="glossary-name">Azure DevOps</div><div class="glossary-desc">Microsoft platform for work item tracking, sprint planning, code repositories, and CI/CD pipelines.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">AWS</div><div class="glossary-name">Amazon Web Services</div><div class="glossary-desc">Cloud computing platform providing on-demand infrastructure, storage, and computing power.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">—</div><div class="glossary-name">Braze</div><div class="glossary-desc">Customer engagement platform for personalized, real-time messaging across push, email, SMS, in-app, and web.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">—</div><div class="glossary-name">Genesys</div><div class="glossary-desc">Cloud-based contact center platform managing customer interactions across voice, chat, email, and messaging.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">—</div><div class="glossary-name">Merkury</div><div class="glossary-desc">Merkle's proprietary identity resolution platform unifying known and anonymous customer data into a persistent person-based ID.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">SFMC</div><div class="glossary-name">Salesforce Marketing Cloud</div><div class="glossary-desc">Marketing automation platform for managing campaigns across email, SMS, social, and advertising channels.</div></div>
+      <div class="glossary-row"><div class="glossary-acronym">SF</div><div class="glossary-name">Snowflake</div><div class="glossary-desc">Cloud-based data warehousing platform for storing, processing, and analyzing large volumes of structured data.</div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b => { if (b.getAttribute('onclick').includes("'" + id + "'")) b.classList.add('active'); });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showFolder(type) {
+  document.querySelectorAll('.folder-content').forEach(f => f.classList.remove('active'));
+  document.querySelectorAll('.folder-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('folder-' + type).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+}
+
+function showGlossaryTab(tab) {
+  document.querySelectorAll('.glossary-section').forEach(s => s.style.display = 'none');
+  document.getElementById('glossary-' + tab).style.display = 'block';
+  document.querySelectorAll('.folder-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('glossary-search').value = '';
+}
+
+function filterGlossary(val) {
+  val = val.toLowerCase();
+  document.querySelectorAll('.glossary-section').forEach(s => {
+    if (val) {
+      s.style.display = 'block';
+      s.querySelectorAll('.glossary-row').forEach(r => {
+        r.style.display = r.textContent.toLowerCase().includes(val) ? 'flex' : 'none';
+      });
+    } else {
+      const activeTab = document.querySelector('.folder-tab.active');
+      if (activeTab) {
+        // restore active tab visibility
+        document.querySelectorAll('.glossary-section').forEach(sec => sec.style.display = 'none');
+        const tabName = activeTab.getAttribute('onclick').match(/'(\w+)'/)[1];
+        document.getElementById('glossary-' + tabName).style.display = 'block';
+      }
+      s.querySelectorAll('.glossary-row').forEach(r => r.style.display = 'flex');
+    }
+  });
+}
+</script>
+</body>
+</html>
